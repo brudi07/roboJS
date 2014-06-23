@@ -58,25 +58,66 @@ var battle_menu = {
     create: function() { 
 
         // create robot on screen
-        game.player = this.game.add.sprite(game.world.width * .33, game.world.height *.66, 'player');
-        game.enemy = this.game.add.sprite(game.world.width * .66, game.world.height * .33, 'enemy');
+        game.player = this.game.add.sprite(game.world.width * .33, game.world.height *.5, 'player');
+        game.enemy = this.game.add.sprite(game.world.width * .66, game.world.height * .1, 'enemy');
+        game.player.anchor.set(0.5);
+        game.enemy.anchor.set(0.5);
 
-        // create health bar for player
+        // style for text
         var style = { font: "24px Arial", fill: "#ffffff" };
-        game.label_name = this.game.add.text(game.world.width * .75, game.world.height *.66, player.roboName, style); 
-        game.label_health = this.game.add.text(game.world.width * .9, game.world.height *.66, player.currentHealth, style); 
+
+        // create player name and health bar
+        game.label_playerName = this.game.add.text(game.world.width * .6, game.world.height *.5, player.roboName, style); 
+        game.label_playerHealth = this.game.add.text(game.world.width * .8, game.world.height * .5, player.currentHealth + " / " + player.maxHealth, style); 
+        game.label_playerName.anchor.set(0.5);
+        game.label_playerHealth.anchor.set(0.5);
+
+        // create enemy name and health bar
+        game.label_enemyName = this.game.add.text(game.world.width * .2, game.world.height *.1, enemy.roboName, style); 
+        game.label_enemyHealth = this.game.add.text(game.world.width * .4, game.world.height * .1, enemy.currentHealth + " / " + enemy.maxHealth, style); 
+        game.label_enemyName.anchor.set(0.5);
+        game.label_enemyHealth.anchor.set(0.5);
 
         // create buttons
-        var runButton =game.add.button(game.world.width * .97, game.world.height *.03, 'run_button', this.runAway, this);
+        var buttonGroup = game.add.group();
+
+        var runButton = game.add.button(game.world.width * .97, game.world.height *.03, 'run_button', this.runAway, this);
         runButton.anchor.set(0.5);
         runButton.scale.setTo(.2, .2);
+
+        var headButton = game.add.button(game.world.width * .1, game.world.height *.95, 'button', null, this);
+        headButton.anchor.set(0.5);
+        headButton.scale.setTo(1.5, .5);
+
+        var lArmButton = game.add.button(game.world.width * .3, game.world.height *.95, 'button', null, this);
+        lArmButton.anchor.set(0.5);
+        lArmButton.scale.setTo(1.5, .5);
+
+        var rArmButton = game.add.button(game.world.width * .5, game.world.height *.95, 'button', null, this);
+        rArmButton.anchor.set(0.5);
+        rArmButton.scale.setTo(1.5, .5);
+
+        var bodyButton = game.add.button(game.world.width * .7, game.world.height *.95, 'button', null, this);
+        bodyButton.anchor.set(0.5);
+        bodyButton.scale.setTo(1.5, .5);
+
+        var legsButton = game.add.button(game.world.width * .9, game.world.height *.95, 'button', null, this);
+        legsButton.anchor.set(0.5);
+        legsButton.scale.setTo(1.5, .5);
+
+        // add the buttons to a group
+        buttonGroup.add(headButton);
+        buttonGroup.add(lArmButton);
+        buttonGroup.add(rArmButton);
+        buttonGroup.add(bodyButton);
+        buttonGroup.add(legsButton);
 
     },
 
     updateHealth: function() {
 
         // update health
-        game.label_health.setText(player.currentHealth);   
+        game.label_playerHealth.setText(player.currentHealth + " / " + player.maxHealth);   
 
     },
 

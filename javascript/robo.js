@@ -1,36 +1,40 @@
 // create the game canvas/world
-var game = new Phaser.Game(400, 490, Phaser.AUTO, 'game_div');
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game_div');
 
 // main menu state
 var main_menu = {
 
     preload: function() { 
 
-        // create battle_menu button
-        main_menu.game.load.image('battle_menu_button', 'assets/robo/battle_menu.png');
+        // preload backgoround
+        game.stage.backgroundColor = '#000000';
+
+        // preload button
+        game.load.image('battle_menu_button', 'assets/robo/button.png');
 
     },
 
     create: function() { 
 
-        // add the battle_menu button to the menu
-        main_menu.game.add.button(game.world.centerX - 75, game.world.centerY - 25, 'battle_menu_button', this.goTobattle_menu, this);
+        // style for text overlay on buttons
+        var style = { font: "30px Arial", fill: "#ffffff", align: "center" };
+
+        // add the battle_menu button and the battle_label to the menu and have them centered
+        var battle_button = game.add.button(game.world.centerX, game.world.centerY, 'battle_menu_button', this.goTobattle_menu, this);
+        var battle_label = game.add.text(game.world.centerX, game.world.centerY, "Battle", style); 
+        battle_button.anchor.set(0.5);
+        battle_label.anchor.set(0.5);
+        battle_button.scale.setTo(1.5, .5);
 
     },
 
     goTobattle_menu: function() {
 
         // goto battle_menu
-        main_menu.game.state.add('battle_menu', battle_menu);  
-        main_menu.game.state.start('battle_menu'); 
+        game.state.start('battle_menu'); 
 
     },
 
-    exitGame: function() {
-
-        // exit the game (only applies to mobile devices)
-
-    }
 };
 
 // battle menu state
@@ -38,54 +42,59 @@ var battle_menu = {
 
     preload: function() { 
 
-        // background image
-        battle_menu.stage.game.stage.backgroundColor = '#000000';
+        // preload background
+        // battle_menu.game.stage.backgroundColor = '#ffffff';
 
-        // buttons
-        battle_menu.game.load.image('run_button', 'assets/robo/run.png');
+        // preload button
+        game.load.image('button', 'assets/robo/button.png');
+        game.load.image('run_button', 'assets/robo/exit.png');
 
         // load images for robots
-        battle_menu.game.load.image('player', 'assets/robo/robot.png');  
-        battle_menu.game.load.image('enemy', 'assets/robo/robot.png');  
+        game.load.image('player', 'assets/robo/robot.png');  
+        game.load.image('enemy', 'assets/robo/robot.png');  
 
     },
 
     create: function() { 
 
         // create robot on screen
-        battle_menu.player = this.game.add.sprite(100, 245, 'player');
-        battle_menu.enemy = this.game.add.sprite(300, 145, 'enemy');
+        game.player = this.game.add.sprite(game.world.width * .33, game.world.height *.66, 'player');
+        game.enemy = this.game.add.sprite(game.world.width * .66, game.world.height * .33, 'enemy');
 
         // create health bar for player
-        var style = { font: "30px Arial", fill: "#ffffff" };
-        battle_menu.label_name = this.game.add.text(175, 245, robot.name, style); 
-        battle_menu.label_health = this.game.add.text(200, 245, robot.Currenthealth, style); 
+        var style = { font: "24px Arial", fill: "#ffffff" };
+        game.label_name = this.game.add.text(game.world.width * .75, game.world.height *.66, player.roboName, style); 
+        game.label_health = this.game.add.text(game.world.width * .9, game.world.height *.66, player.currentHealth, style); 
 
         // create buttons
-        var runButton = battle_menu.game.add.button(100, 345, 'run_button', this.runAway, this);
+        var runButton =game.add.button(game.world.width * .97, game.world.height *.03, 'run_button', this.runAway, this);
+        runButton.anchor.set(0.5);
+        runButton.scale.setTo(.2, .2);
 
     },
 
     updateHealth: function() {
 
         // update health
-        battle_menu.label_health.content = player.currentHealth;  
+        game.label_health.setText(player.currentHealth);   
 
     },
 
     runAway: function() {
 
-        // return to main menu
-        game.state.add('main_menu', main_menu);  
+        // return to main menu 
         game.state.start('main_menu'); 
 
     }
 };
 
 // robot object
-function robot(name, health, physicalAttack, physicalDefense, specialAttack, specialDefense, speed) {
+function robot(name, level, xp, health, physicalAttack, physicalDefense, specialAttack, specialDefense, speed) {
     // name
-    this.name = name;
+    this.roboName = name;
+    // level and xp
+    this.level = level;
+    this.xp = xp;
     // health
     this.maxHealth = health;
     this.currentHealth = health;
@@ -102,23 +111,6 @@ function robot(name, health, physicalAttack, physicalDefense, specialAttack, spe
     // speed
     this.maxSpeed = speed;
     this.currentSpeed = speed;
-
-    // getters and setters for attributes
-    this.getMaxHealth = function() {
-        return this.maxHealth;
-    }
-
-    this.seMaxHealth = function(maxHealth) {
-        return this.maxHealth = maxHealth;
-    }
-
-    this.getCurrentHealth = function() {
-        return this.currentHealth;
-    }
-
-    this.seCurrentHealth = function(currentHealth) {
-        return this.currentHealth = currentHealth;
-    }
 
     // equip parts
     this.equipPart = function() {
@@ -171,9 +163,11 @@ var battle = function(player, enemy, battle_menu) {
 }
 
 // create the player object
-var player = new robot("Player", 10, 5, 5, 5, 5, 5, 5);
-var enemy = new robot("Enemy", 10, 5, 5, 5, 5, 5, 5);
+var player = new robot("Player", 1, 0, 10, 5, 5, 5, 5, 5, 5);
+var enemy = new robot("Enemy", 1, 0, 10, 5, 5, 5, 5, 5, 5);
 
-// load the main menu on start up
+// add the game states
 game.state.add('main_menu', main_menu);  
+game.state.add('battle_menu', battle_menu);  
+// load the main menu on start up
 game.state.start('main_menu'); 
